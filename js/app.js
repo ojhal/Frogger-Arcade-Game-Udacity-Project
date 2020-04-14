@@ -11,14 +11,20 @@ var Enemy = function(x,y) {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-    this.height = 605;
-    this.width = 505;
+    this.height = 65;
+    this.width = 95;
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    this.x += 150 * dt;
+    //this.x += 150 * dt;
+
+    if(this.x > ctx.canvas.width + this.width){
+        this.x - 200 * Math.floor(Math.random() * 4) + 1; //random number 1-4
+    }else{
+        this.x += 150 * dt;
+    }
 
 
 
@@ -35,10 +41,10 @@ Enemy.prototype.render = function() {
 };
 
 
-var Player = function(x,y,sprite){
+var Player = function(x,y){
     this.x = x;
     this.y = y;
-    this.sprite = sprite;
+    this.sprite = 'images/char-boy.png';
     this.height = 75;
     this.width = 65;
 
@@ -54,7 +60,9 @@ var Player = function(x,y,sprite){
 // Place the player object in a variable called player
 
 Player.prototype.render = function() {
-}
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
 
 Player.prototype.update = function(dt) {
 
@@ -65,7 +73,7 @@ Player.prototype.handleInput = function(direction){
         vertical = 83;
 
 
-    if (direction ==='left' && this.x + horizontal >= 0){
+    if (direction ==='left' && this.x - horizontal >= 0){
         this.x -= horizontal;
 
     }else if (direction === 'right' && this.x + horizontal < ctx.canvas.width){
@@ -74,7 +82,7 @@ Player.prototype.handleInput = function(direction){
     }else if (direction === 'down' && this.y + vertical < ctx.canvas.height -200){
         this.y += vertical;
 
-    }else if (direction === 'up'){
+    }else if (direction === 'up' && this.y - vertical > 0 - player.height){
         this.y -= vertical;
     }
 }
@@ -94,13 +102,13 @@ document.addEventListener('keyup', function(e) {
 });
 
 
-const enemyPosition = [55, 140, 230];
+const enemyPosition = [155, 140, 230];
 
 
 const player = new Player(202, 400, 'images/char-boy.png');
 
 const allEnemies = enemyPosition.map((y, index) => {
-    return new Enemy( (+200 * (index +1)), y);
+    return new Enemy( (-400 * (index +1)), y);
 });
 
 
