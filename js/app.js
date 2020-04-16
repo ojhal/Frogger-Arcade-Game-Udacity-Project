@@ -1,9 +1,8 @@
-let debug = false;
-let game = true;
 // Enemies our player must avoid
-var Enemy = function(x,y) {
+var Enemy = function(x, y, speed) {
     this.x = x;
     this.y = y;
+    this.speed = speed;
 
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -11,44 +10,46 @@ var Enemy = function(x,y) {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-    this.height = 65;
-    this.width = 95;
-};
+}
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    //this.x += 150 * dt;
+    this.x += this.speed * dt;
 
-    if(this.x > ctx.canvas.width + this.width){
-        this.x - 200 * Math.floor(Math.random() * 4) + 1; //random number 1-4
-    }else{
-        this.x += 150 * dt;
+    if(this.x > 510) {
+        this.x = -50;
+        this.speed = 100 + Math.floor(Math.random() * 222);
     }
 
+    if (player.x < this.x + 80 &&
+        player.x + 80 > this.x &&
+        player.y < this.y + 60 &&
+        60 + player.y > this.y ) {
+        player.x = 202;
+        player.y = 405;
 
+    }
+}
+    
+     // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+
+    // Draw the enemy on the screen, required method for game
+Enemy.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+var Player = function (x, y){
+    this.x = x;
+    this.y = y;
+    this.player = 'images/char-boy.png';
+}
 
     
 
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-};
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-
-var Player = function(x,y){
-    this.x = x;
-    this.y = y;
-    this.sprite = 'images/char-boy.png';
-    this.height = 75;
-    this.width = 65;
-
-}
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -60,7 +61,7 @@ var Player = function(x,y){
 // Place the player object in a variable called player
 
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.player), this.x, this.y);
 };
 
 
@@ -68,25 +69,37 @@ Player.prototype.update = function(dt) {
 
 };
 
-Player.prototype.handleInput = function(direction){
-    const horizontal = 101;
-        vertical = 83;
-
-
-    if (direction ==='left' && this.x - horizontal >= 0){
-        this.x -= horizontal;
-
-    }else if (direction === 'right' && this.x + horizontal < ctx.canvas.width){
-        this.x += horizontal;
-
-    }else if (direction === 'down' && this.y + vertical < ctx.canvas.height -200){
-        this.y += vertical;
-
-    }else if (direction === 'up' && this.y - vertical > 0 - player.height){
-        this.y -= vertical;
+Player.prototype.handleInput = function(keyPress) {
+    
+    if (keyPress =='left' && this.x > 0) {
+        this.x -= 102;
+    }
+    if (keyPress == 'right' && this.x < 405) {
+        this.x += 102;
+    }
+    if (keyPress == 'down' && this.y < 405) {
+        this.y += 83;
+    }
+    if (keyPress == 'up' && this.y > 0){
+        this.y -= 83;
+    }
+    if (this.y < 0) {
+        setTimeout(function() {
+            player.x = 202;
+            player.y = 405;
+        }, 600);
     }
 }
 
+var allEnemies = [];
+var enemyLocation = [63, 147, 230];
+
+enemyLocation.forEach(function (locationY) {
+    enemy = new Enemy(0, locationY , 200);
+    allEnemies.push(enemy);
+});
+
+var player = new Player(202, 405);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -101,25 +114,4 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-
-const enemyPosition = [155, 140, 230];
-
-
-const player = new Player(202, 400, 'images/char-boy.png');
-
-const allEnemies = enemyPosition.map((y, index) => {
-    return new Enemy( (-400 * (index +1)), y);
-});
-
-
-//for debugging
-
-function enemyBBox(enemy) {
-
-}
-
-
-function playerBBox(player) {
-
-}
 
